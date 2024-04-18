@@ -4,9 +4,6 @@ import (
 	"context"
 	"log"
 
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
-
 	"github.com/kirillmc/platform_common/pkg/closer"
 	"github.com/kirillmc/platform_common/pkg/db"
 	"github.com/kirillmc/platform_common/pkg/db/pg"
@@ -14,7 +11,6 @@ import (
 	"github.com/kirillmc/trainings-auth/internal/api/auth"
 	"github.com/kirillmc/trainings-auth/internal/api/user"
 	"github.com/kirillmc/trainings-auth/internal/client/rpc"
-	accessClient "github.com/kirillmc/trainings-auth/internal/client/rpc/access"
 	"github.com/kirillmc/trainings-auth/internal/config"
 	"github.com/kirillmc/trainings-auth/internal/config/env"
 	"github.com/kirillmc/trainings-auth/internal/interceptor"
@@ -24,7 +20,6 @@ import (
 	accessService "github.com/kirillmc/trainings-auth/internal/service/access"
 	authService "github.com/kirillmc/trainings-auth/internal/service/auth"
 	userService "github.com/kirillmc/trainings-auth/internal/service/user"
-	descAccess "github.com/kirillmc/trainings-auth/pkg/access_v1"
 )
 
 // содержит все зависимости, необходимые в рамках приложения
@@ -124,29 +119,29 @@ func (s *serviceProvider) AccessConfig() config.AccessConfig {
 	return s.accessConfig
 }
 
-func (s *serviceProvider) AccessClient() rpc.AccessClient {
-	if s.accessClient == nil {
-		cfg := s.AccessConfig()
+//func (s *serviceProvider) AccessClient() rpc.AccessClient {
+//	if s.accessClient == nil {
+//		cfg := s.AccessConfig()
+//
+//		conn, err := grpc.Dial(
+//			cfg.Address(),
+//			grpc.WithTransportCredentials(insecure.NewCredentials()),
+//		)
+//		if err != nil {
+//			log.Fatalf("failed to connect to access: %v", err)
+//		}
+//
+//		s.accessClient = accessClient.NewAccessClient(descAccess.UnimplementedAccessV1Server{})
+//	}
+//
+//	return s.accessClient
+//}
 
-		conn, err := grpc.Dial(
-			cfg.Address(),
-			grpc.WithTransportCredentials(insecure.NewCredentials()),
-		)
-		if err != nil {
-			log.Fatalf("failed to connect to access: %v", err)
-		}
-
-		s.accessClient = accessClient.NewAccessClient(descAccess.NewAccessV1Client(conn))
-	}
-
-	return s.accessClient
-}
-
-func (s *serviceProvider) InterceptorClient() *interceptor.Interceptor {
+func (s *serviceProvider) InterceptorClient(ctx context.Context) *interceptor.Interceptor {
 	log.Printf("s.interceptorClient == nil: %v", s.interceptorClient == nil)
 	if s.interceptorClient == nil {
 		s.interceptorClient = &interceptor.Interceptor{
-			Client: s.AccessClient(),
+			Client: s.AccessService(ctx),
 		}
 		log.Printf("s.interceptorClient == nil: %v", s.interceptorClient == nil)
 	}

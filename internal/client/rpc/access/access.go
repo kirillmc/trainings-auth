@@ -4,25 +4,23 @@ import (
 	"context"
 
 	"github.com/kirillmc/trainings-auth/internal/client/rpc"
-	descAccess "github.com/kirillmc/trainings-auth/pkg/access_v1"
+	"github.com/kirillmc/trainings-auth/internal/service"
 )
 
 type accessClient struct {
-	client descAccess.AccessV1Client
+	client service.AccessService
 }
 
 var _ rpc.AccessClient = (*accessClient)(nil)
 
-func NewAccessClient(client descAccess.AccessV1Client) rpc.AccessClient {
+func NewAccessClient(client service.AccessService) rpc.AccessClient {
 	return &accessClient{
 		client: client,
 	}
 }
 
 func (c *accessClient) Check(ctx context.Context, endpoint string) error {
-	_, err := c.client.Check(ctx, &descAccess.CheckRequest{
-		EndpointAddress: endpoint,
-	})
+	err := c.client.Check(ctx, endpoint)
 
 	return err
 }
