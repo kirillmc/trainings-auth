@@ -33,6 +33,7 @@ type serviceProvider struct {
 	grpcConfig    config.GRPCConfig
 	httpConfig    config.HTTPConfig
 	swaggerConfig config.SwaggerConfig
+	accessConfig  config.AccessConfig
 
 	dbClient          db.Client
 	accessClient      rpc.AccessClient
@@ -110,9 +111,22 @@ func (s *serviceProvider) SwaggerConfig() config.SwaggerConfig {
 	return s.swaggerConfig
 }
 
+func (s *serviceProvider) AccessConfig() config.AccessConfig {
+	if s.accessConfig == nil {
+		accessConfig, err := env.NewAccessConfig()
+		if err != nil {
+			log.Fatalf("failed to get access configs: %v", err)
+		}
+
+		s.accessConfig = accessConfig
+	}
+
+	return s.accessConfig
+}
+
 func (s *serviceProvider) AccessClient() rpc.AccessClient {
 	if s.accessClient == nil {
-		cfg := s.GRPCConfig()
+		cfg := s.AccessConfig()
 
 		conn, err := grpc.Dial(
 			cfg.Address(),
@@ -129,12 +143,14 @@ func (s *serviceProvider) AccessClient() rpc.AccessClient {
 }
 
 func (s *serviceProvider) InterceptorClient() *interceptor.Interceptor {
+	log.Printf("s.interceptorClient == nil: %v", s.interceptorClient == nil)
 	if s.interceptorClient == nil {
 		s.interceptorClient = &interceptor.Interceptor{
 			Client: s.AccessClient(),
 		}
+		log.Printf("s.interceptorClient == nil: %v", s.interceptorClient == nil)
 	}
-
+	log.Printf("s.interceptorClient == nil: %v", s.interceptorClient == nil)
 	return s.interceptorClient
 }
 

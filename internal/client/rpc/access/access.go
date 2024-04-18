@@ -23,5 +23,6 @@ func (c *accessClient) Check(ctx context.Context, endpoint string) error {
 	_, err := c.client.Check(ctx, &descAccess.CheckRequest{
 		EndpointAddress: endpoint,
 	})
+
 	return err
 }

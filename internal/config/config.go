@@ -22,6 +22,10 @@ type PGConfig interface {
 	DSN() string
 }
 
+type AccessConfig interface {
+	Address() string
+}
+
 type AccessTokenConfig interface {
 	AccessTokenSecretKey() string
 	AccessTokenExpiration() time.Duration

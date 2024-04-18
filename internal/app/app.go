@@ -138,10 +138,10 @@ func (a *App) initGRPCServer(ctx context.Context) error {
 
 	a.grpcServer = grpc.NewServer(
 		grpc.Creds(insecure.NewCredentials()),
-		//grpc.Creds(insecure.NewCredentials()),
 		grpc.ChainUnaryInterceptor(c.PolicyInterceptor, interceptor.ValidateInerceptor),
+		//grpc.UnaryInterceptor(interceptor.ValidateInerceptor),
 	)
-
+	log.Println(" grpc.NewServerEnd")
 	reflection.Register(a.grpcServer) // рефлексия вкл для постмана
 
 	descUser.RegisterUserV1Server(a.grpcServer, a.serviceProvider.UserImplementation(ctx))

@@ -19,8 +19,9 @@ create table roles_to_endpoints
     role     integer not null
 );
 
+
 insert into roles_to_endpoints (endpoint, role)
-values ('/user_v1.ChatV1/Create', 3),
+values ('/training_v1.TrainingV1/CreateTrainingProgram', 3),
        ('/user_v1.UserV1/Get', 3),
        ('/user_v1.UserV1/Delete', 3),
        ('/user_v1.UserV1/Update', 3);
