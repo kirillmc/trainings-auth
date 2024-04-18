@@ -3,11 +3,11 @@ package user
 import (
 	"context"
 
-	"github.com/kirillmc/auth/internal/model"
+	"github.com/kirillmc/trainings-auth/internal/model"
 )
 
-func (s *serv) Get(ctx context.Context, id int64) (*model.User, error) {
-	user, err := s.userRepository.Get(ctx, id)
+func (s *serv) GetUser(ctx context.Context, id int64) (*model.User, error) {
+	user, err := s.userRepository.GetUser(ctx, id)
 	if err != nil {
 		return nil, err
 	}

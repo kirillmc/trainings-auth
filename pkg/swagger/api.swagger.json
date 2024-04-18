@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Auth API",
+    "title": "Create User API",
     "version": "1.0.0",
     "contact": {
       "name": "Telegram",
@@ -25,6 +25,138 @@
     "application/json"
   ],
   "paths": {
+    "/lock-user": {
+      "patch": {
+        "operationId": "UserV1_LockUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/user_v1LockUserRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserV1"
+        ]
+      }
+    },
+    "/unlock-user": {
+      "patch": {
+        "operationId": "UserV1_UnlockUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/user_v1UnlockUserRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserV1"
+        ]
+      }
+    },
+    "/update-password": {
+      "patch": {
+        "operationId": "UserV1_UpdatePassword",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/user_v1UpdatePasswordRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserV1"
+        ]
+      }
+    },
+    "/update-role": {
+      "patch": {
+        "operationId": "UserV1_UpdateRole",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/user_v1UpdateRoleRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserV1"
+        ]
+      }
+    },
     "/user": {
       "delete": {
         "operationId": "UserV1_Delete",
@@ -183,7 +315,7 @@
       "type": "object",
       "properties": {
         "user": {
-          "$ref": "#/definitions/user_v1User"
+          "$ref": "#/definitions/user_v1UserInfo"
         }
       }
     },
@@ -199,8 +331,21 @@
     "user_v1GetResponse": {
       "type": "object",
       "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
         "user": {
           "$ref": "#/definitions/user_v1User"
+        }
+      }
+    },
+    "user_v1LockUserRequest": {
+      "type": "object",
+      "properties": {
+        "userToLockId": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -209,10 +354,42 @@
       "enum": [
         "UNKNOWN",
         "USER",
-        "ADMIN",
-        "MODER"
+        "MODER",
+        "ADMIN"
       ],
       "default": "UNKNOWN"
+    },
+    "user_v1UnlockUserRequest": {
+      "type": "object",
+      "properties": {
+        "userToUnlockId": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "user_v1UpdatePasswordInfo": {
+      "type": "object",
+      "properties": {
+        "password": {
+          "type": "string"
+        },
+        "passwordConfirm": {
+          "type": "string"
+        }
+      }
+    },
+    "user_v1UpdatePasswordRequest": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "info": {
+          "$ref": "#/definitions/user_v1UpdatePasswordInfo"
+        }
+      }
     },
     "user_v1UpdateRequest": {
       "type": "object",
@@ -226,6 +403,18 @@
         }
       }
     },
+    "user_v1UpdateRoleRequest": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "role": {
+          "$ref": "#/definitions/user_v1Role"
+        }
+      }
+    },
     "user_v1UpdateUserInfo": {
       "type": "object",
       "properties": {
@@ -234,15 +423,6 @@
         },
         "email": {
           "type": "string"
-        },
-        "password": {
-          "type": "string"
-        },
-        "passwordConfirm": {
-          "type": "string"
-        },
-        "role": {
-          "$ref": "#/definitions/user_v1Role"
         },
         "name": {
           "type": "string"
@@ -258,12 +438,26 @@
     "user_v1User": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
+        "login": {
+          "type": "string"
         },
-        "info": {
-          "$ref": "#/definitions/user_v1UserInfo"
+        "email": {
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/definitions/user_v1Role"
+        },
+        "name": {
+          "type": "string"
+        },
+        "surname": {
+          "type": "string"
+        },
+        "avatar": {
+          "type": "string"
+        },
+        "isLocked": {
+          "type": "boolean"
         }
       }
     },

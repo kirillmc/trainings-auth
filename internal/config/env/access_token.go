@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/kirillmc/auth/internal/config"
+	"github.com/kirillmc/trainings-auth/internal/config"
 )
 
 const (

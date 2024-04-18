@@ -6,7 +6,7 @@ import (
 
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	descAccess "github.com/kirillmc/auth/pkg/access_v1"
+	descAccess "github.com/kirillmc/trainings-auth/pkg/access_v1"
 )
 
 func (i *Implementation) Check(ctx context.Context, req *descAccess.CheckRequest) (*emptypb.Empty, error) {

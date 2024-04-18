@@ -3,19 +3,26 @@ package repository
 import (
 	"context"
 
-	"github.com/kirillmc/auth/internal/model"
+	"github.com/kirillmc/trainings-auth/internal/model"
 )
 
 // файл ТОЛЬКО для интерфейсов
 
 type UserRepository interface {
 	Create(ctx context.Context, req *model.UserToCreate) (int64, error)
-	Get(ctx context.Context, id int64) (*model.User, error)
-	Update(ctx context.Context, req *model.UserToUpdate) error
+
+	GetUser(ctx context.Context, id int64) (*model.User, error)
+
+	UpdateUser(ctx context.Context, req *model.UserToUpdate) error
+	UpdatePassword(ctx context.Context, req *model.PasswordToUpdate) error
+	UpdateRole(ctx context.Context, req *model.RoleToUpdate) error
+
+	LockUser(ctx context.Context, req *model.UserToLock) error
+	UnlockUser(ctx context.Context, req *model.UserToUnlock) error
 	Delete(ctx context.Context, id int64) error
 
-	GetRole(ctx context.Context, userName string) (model.Role, error)
-	GetHashPass(ctx context.Context, userName string) (string, error)
+	GetRole(ctx context.Context, login string) (model.Role, error)
+	GetHashPass(ctx context.Context, login string) (string, error)
 
 	GetAccessibleRoles(ctx context.Context) (map[string]model.Role, error)
 }

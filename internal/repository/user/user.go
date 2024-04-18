@@ -2,17 +2,14 @@ package user
 
 import (
 	"context"
-	"crypto/sha256"
-	"fmt"
-	"time"
 
 	"golang.org/x/crypto/bcrypt"
 
 	sq "github.com/Masterminds/squirrel"
-	"github.com/kirillmc/auth/internal/model"
-	"github.com/kirillmc/auth/internal/repository/user/converter"
-	modelRepo "github.com/kirillmc/auth/internal/repository/user/model"
 	"github.com/kirillmc/platform_common/pkg/db"
+	"github.com/kirillmc/trainings-auth/internal/model"
+	"github.com/kirillmc/trainings-auth/internal/repository/user/converter"
+	modelRepo "github.com/kirillmc/trainings-auth/internal/repository/user/model"
 )
 
 // ТУТ ИМПЛЕМЕНТАЦИЯ МЕТОДОВ
@@ -23,9 +20,9 @@ func (r *repo) Create(ctx context.Context, req *model.UserToCreate) (int64, erro
 		return 0, err
 	}
 
-	builder := sq.Insert(tableName).PlaceholderFormat(sq.Dollar).
-		Columns(nameColumn, emailColumn, passwordColumn, roleColumn).
-		Values(req.Username, req.Email, hashPass, req.Role).
+	builder := sq.Insert(usersTableName).PlaceholderFormat(sq.Dollar).
+		Columns(nameColumn, surnameColumn, emailColumn, avatarlColumn, loginColumn, passwordHashColumn, roleColumn).
+		Values(req.Name, req.Surname, req.Email, req.Avatar, req.Login, hashPass, req.Role).
 		Suffix(returnId)
 
 	query, args, err := builder.ToSql()
@@ -49,10 +46,10 @@ func (r *repo) Create(ctx context.Context, req *model.UserToCreate) (int64, erro
 	return id, nil
 }
 
-func (r *repo) Get(ctx context.Context, id int64) (*model.User, error) {
-	builder := sq.Select(idColumn, nameColumn, emailColumn, roleColumn, createdAtColumn, updatedAtColumn).
+func (r *repo) GetUser(ctx context.Context, id int64) (*model.User, error) {
+	builder := sq.Select(idColumn, nameColumn, surnameColumn, emailColumn, avatarlColumn, loginColumn, lockedColumn, roleColumn).
 		PlaceholderFormat(sq.Dollar).
-		From(tableName).
+		From(usersTableName).
 		Where(sq.Eq{idColumn: id}).
 		Limit(1)
 
@@ -62,7 +59,7 @@ func (r *repo) Get(ctx context.Context, id int64) (*model.User, error) {
 	}
 
 	q := db.Query{
-		Name:     "user_repository.Get",
+		Name:     "user_repository.GetUser",
 		QueryRaw: query,
 	}
 
@@ -76,22 +73,28 @@ func (r *repo) Get(ctx context.Context, id int64) (*model.User, error) {
 	return converter.ToUserFromRepo(&user), nil
 }
 
-func (r *repo) Update(ctx context.Context, req *model.UserToUpdate) error {
-	builder := sq.Update(tableName).
+func (r *repo) UpdateUser(ctx context.Context, req *model.UserToUpdate) error {
+	builder := sq.Update(usersTableName).
 		PlaceholderFormat(sq.Dollar).
-		Set(updatedAtColumn, time.Now()).
 		Where(sq.Eq{idColumn: req.Id})
 
-	if req.Username != nil {
-		builder = builder.Set(nameColumn, req.Username.Value)
+	if req.Login != nil {
+		builder = builder.Set(loginColumn, req.Login.Value)
 	}
 
 	if req.Email != nil {
 		builder = builder.Set(emailColumn, req.Email.Value)
 	}
 
-	if req.Role != model.RoleUnknown {
-		builder = builder.Set(roleColumn, req.Role)
+	if req.Name != nil {
+		builder = builder.Set(nameColumn, req.Name.Value)
+	}
+	if req.Surname != nil {
+		builder = builder.Set(surnameColumn, req.Surname.Value)
+	}
+
+	if req.Avatar != nil {
+		builder = builder.Set(avatarlColumn, req.Avatar.Value)
 	}
 
 	query, args, err := builder.ToSql()
@@ -100,7 +103,7 @@ func (r *repo) Update(ctx context.Context, req *model.UserToUpdate) error {
 	}
 
 	q := db.Query{
-		Name:     "user_repository.Update",
+		Name:     "user_repository.UpdateUser",
 		QueryRaw: query,
 	}
 
@@ -113,7 +116,7 @@ func (r *repo) Update(ctx context.Context, req *model.UserToUpdate) error {
 }
 
 func (r *repo) Delete(ctx context.Context, id int64) error {
-	builder := sq.Delete(tableName).PlaceholderFormat(sq.Dollar).Where(sq.Eq{"id": id})
+	builder := sq.Delete(usersTableName).PlaceholderFormat(sq.Dollar).Where(sq.Eq{idColumn: id})
 
 	query, args, err := builder.ToSql()
 	if err != nil {
@@ -133,12 +136,109 @@ func (r *repo) Delete(ctx context.Context, id int64) error {
 	return nil
 }
 
-func genPassHash1(pass string) string {
-	h := sha256.New()
-	h.Write([]byte(pass))
+func (r *repo) UpdatePassword(ctx context.Context, req *model.PasswordToUpdate) error {
+	builder := sq.Update(usersTableName).
+		PlaceholderFormat(sq.Dollar).
+		Where(sq.Eq{idColumn: req.UserId})
 
-	return fmt.Sprintf("%x", h.Sum(nil))
+	if req.Password != nil {
+		hashPass, err := genPassHash(req.Password.Value)
+		if err != nil {
+			return err
+		}
+
+		builder = builder.Set(passwordHashColumn, hashPass)
+	}
+
+	query, args, err := builder.ToSql()
+	if err != nil {
+		return err
+	}
+
+	q := db.Query{
+		Name:     "user_repository.UpdatePassword",
+		QueryRaw: query,
+	}
+
+	_, err = r.db.DB().ExecContext(ctx, q, args...)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
+func (r *repo) UpdateRole(ctx context.Context, req *model.RoleToUpdate) error {
+	builder := sq.Update(usersTableName).
+		PlaceholderFormat(sq.Dollar).
+		Where(sq.Eq{idColumn: req.UserId})
+
+	if req.Role != model.RoleUnknown {
+		builder = builder.Set(roleColumn, req.Role)
+	}
+
+	query, args, err := builder.ToSql()
+	if err != nil {
+		return err
+	}
+
+	q := db.Query{
+		Name:     "user_repository.UpdateRole",
+		QueryRaw: query,
+	}
+
+	_, err = r.db.DB().ExecContext(ctx, q, args...)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *repo) LockUser(ctx context.Context, req *model.UserToLock) error {
+	builder := sq.Update(usersTableName).
+		PlaceholderFormat(sq.Dollar).Set(lockedColumn, true).
+		Where(sq.Eq{idColumn: req.UserToLockId})
+
+	query, args, err := builder.ToSql()
+	if err != nil {
+		return err
+	}
+
+	q := db.Query{
+		Name:     "user_repository.LockUser",
+		QueryRaw: query,
+	}
+
+	_, err = r.db.DB().ExecContext(ctx, q, args...)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+func (r *repo) UnlockUser(ctx context.Context, req *model.UserToUnlock) error {
+	builder := sq.Update(usersTableName).
+		PlaceholderFormat(sq.Dollar).Set(lockedColumn, false).
+		Where(sq.Eq{idColumn: req.UserToUnlockId})
+
+	query, args, err := builder.ToSql()
+	if err != nil {
+		return err
+	}
+
+	q := db.Query{
+		Name:     "user_repository.UnlockUser",
+		QueryRaw: query,
+	}
+
+	_, err = r.db.DB().ExecContext(ctx, q, args...)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func genPassHash(pass string) (string, error) {
 	hashedPass, err := bcrypt.GenerateFromPassword([]byte(pass), 10)
 	if err != nil {

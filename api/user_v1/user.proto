@@ -3,7 +3,6 @@ syntax = "proto3";
 package user_v1;
 
 import "google/protobuf/empty.proto";
-import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 import "google/api/annotations.proto";
 import "validate/validate.proto";
@@ -13,7 +12,7 @@ option go_package = "github.com/kirillmc/trainings-auth/pkg/user_v1;user_v1";
 
 option(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   info:{
-    title:"Auth API",
+    title:"Create User API",
     version:"1.0.0",
     contact:{
       name:"Telegram",
@@ -51,6 +50,33 @@ service UserV1{
     };
   }
 
+  rpc UpdatePassword(UpdatePasswordRequest) returns (google.protobuf.Empty){
+    option(google.api.http) = {
+      patch:"/update-password"
+      body:"*"
+    };
+  }
+  rpc UpdateRole(UpdateRoleRequest) returns (google.protobuf.Empty){
+    option(google.api.http) = {
+      patch:"/update-role"
+      body:"*"
+    };
+  }
+
+  rpc LockUser(LockUserRequest) returns (google.protobuf.Empty){
+    option(google.api.http) = {
+      patch:"/lock-user"
+      body:"*"
+    };
+  }
+
+  rpc UnlockUser(UnlockUserRequest) returns (google.protobuf.Empty){
+    option(google.api.http) = {
+      patch:"/unlock-user"
+      body:"*"
+    };
+  }
+
   rpc Delete(DeleteRequest) returns (google.protobuf.Empty){
     option(google.api.http) = {
       delete:"/user"
@@ -61,8 +87,8 @@ service UserV1{
 enum Role{
   UNKNOWN = 0;
   USER = 1;
-  ADMIN = 2;
-  MODER = 3;
+  MODER = 2;
+  ADMIN = 3;
 }
 
 message UserInfo{
@@ -79,21 +105,28 @@ message UserInfo{
 message UpdateUserInfo{
   google.protobuf.StringValue login = 1[(validate.rules).string = {min_len:1,max_len:50}];
   google.protobuf.StringValue email = 2[(validate.rules).string = {email:true, max_len:50}];
-  google.protobuf.StringValue password = 3[(validate.rules).string = {pattern:"^[A-Za-z0-9]*$",min_len:8, max_len:50}];
-  google.protobuf.StringValue password_confirm = 4[(validate.rules).string = {pattern:"^[A-Za-z0-9]*$",min_len:8, max_len:50}];
-  Role role = 5[(validate.rules).enum.defined_only = true];
-  google.protobuf.StringValue name = 6;
-  google.protobuf.StringValue surname = 7;
-  google.protobuf.StringValue avatar = 8;
+  google.protobuf.StringValue name = 3;
+  google.protobuf.StringValue surname = 4;
+  google.protobuf.StringValue avatar = 5;
+}
+
+message UpdatePasswordInfo{
+  google.protobuf.StringValue password = 1[(validate.rules).string = {pattern:"^[A-Za-z0-9]*$",min_len:8, max_len:50}];
+  google.protobuf.StringValue password_confirm = 2[(validate.rules).string = {pattern:"^[A-Za-z0-9]*$",min_len:8, max_len:50}];
 }
 
 message User{
-  int64 id = 1;
-  UserInfo info = 2;
+  string login = 1[(validate.rules).string = {min_len:1,max_len:50}];
+  string email = 2[(validate.rules).string = {email:true, max_len:50}];
+  Role role = 3[(validate.rules).enum.defined_only = true];
+  string name = 4;
+  string surname = 5;
+  string avatar = 6;
+  bool isLocked = 7;
 }
 
 message CreateRequest{
-  User user = 1;
+  UserInfo user = 1;
 }
 
 message CreateResponse{
@@ -105,12 +138,31 @@ message GetRequest{
 }
 
 message GetResponse{
-  User user = 1;
+  int64 id = 1;
+  User user = 2;
 }
 
 message UpdateRequest{
   int64 id = 1;
   UpdateUserInfo info = 2;
+}
+
+message UpdatePasswordRequest{
+  int64  user_id = 1;
+  UpdatePasswordInfo info = 2;
+}
+
+message UpdateRoleRequest{
+  int64 user_id = 1;
+  Role role = 2[(validate.rules).enum.defined_only = true];
+}
+
+message LockUserRequest{
+  int64 user_to_lock_id = 1;
+}
+
+message UnlockUserRequest{
+  int64 user_to_unlock_id = 1;
 }
 
 message DeleteRequest{

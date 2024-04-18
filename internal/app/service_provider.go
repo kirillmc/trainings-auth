@@ -4,20 +4,20 @@ import (
 	"context"
 	"log"
 
-	"github.com/kirillmc/auth/internal/api/access"
-	"github.com/kirillmc/auth/internal/api/auth"
-	"github.com/kirillmc/auth/internal/api/user"
-	"github.com/kirillmc/auth/internal/config"
-	"github.com/kirillmc/auth/internal/config/env"
-	"github.com/kirillmc/auth/internal/repository"
-	userRepo "github.com/kirillmc/auth/internal/repository/user"
-	"github.com/kirillmc/auth/internal/service"
-	accessService "github.com/kirillmc/auth/internal/service/access"
-	authService "github.com/kirillmc/auth/internal/service/auth"
-	userService "github.com/kirillmc/auth/internal/service/user"
 	"github.com/kirillmc/platform_common/pkg/closer"
 	"github.com/kirillmc/platform_common/pkg/db"
 	"github.com/kirillmc/platform_common/pkg/db/pg"
+	"github.com/kirillmc/trainings-auth/internal/api/access"
+	"github.com/kirillmc/trainings-auth/internal/api/auth"
+	"github.com/kirillmc/trainings-auth/internal/api/user"
+	"github.com/kirillmc/trainings-auth/internal/config"
+	"github.com/kirillmc/trainings-auth/internal/config/env"
+	"github.com/kirillmc/trainings-auth/internal/repository"
+	userRepo "github.com/kirillmc/trainings-auth/internal/repository/user"
+	"github.com/kirillmc/trainings-auth/internal/service"
+	accessService "github.com/kirillmc/trainings-auth/internal/service/access"
+	authService "github.com/kirillmc/trainings-auth/internal/service/auth"
+	userService "github.com/kirillmc/trainings-auth/internal/service/user"
 )
 
 // содержит все зависимости, необходимые в рамках приложения
@@ -44,7 +44,7 @@ func newServiceProvider() *serviceProvider {
 	return &serviceProvider{}
 }
 
-// если Get - в GO Get НЕ УКАЗЫВАЮТ: НЕ GetPGConfig, A PGConfig
+// если GetUser - в GO GetUser НЕ УКАЗЫВАЮТ: НЕ GetPGConfig, A PGConfig
 func (s *serviceProvider) PGConfig() config.PGConfig {
 	if s.pgConfig == nil {
 		pgConfig, err := env.NewPGConfig()

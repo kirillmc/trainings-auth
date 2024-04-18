@@ -6,9 +6,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/kirillmc/auth/internal/config/env"
-	"github.com/kirillmc/auth/internal/model"
-	"github.com/kirillmc/auth/internal/utils"
+	"github.com/kirillmc/trainings-auth/internal/config/env"
+	"github.com/kirillmc/trainings-auth/internal/model"
+	"github.com/kirillmc/trainings-auth/internal/utils"
 )
 
 func (s *serv) GetAccessToken(ctx context.Context, refreshToken string) (string, error) {
@@ -28,8 +28,8 @@ func (s *serv) GetAccessToken(ctx context.Context, refreshToken string) (string,
 	}
 
 	accessToken, err := utils.GenerateToken(model.UserForToken{
-		Username: claims.Username,
-		Role:     claims.Role,
+		Login: claims.Login,
+		Role:  claims.Role,
 	},
 		[]byte(accessConfig.AccessTokenSecretKey()),
 		accessConfig.AccessTokenExpiration(),

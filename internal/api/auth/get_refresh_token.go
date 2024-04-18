@@ -3,7 +3,7 @@ package auth
 import (
 	"context"
 
-	descAuth "github.com/kirillmc/auth/pkg/auth_v1"
+	descAuth "github.com/kirillmc/trainings-auth/pkg/auth_v1"
 )
 
 func (i *Implementation) GetRefreshToken(ctx context.Context, req *descAuth.GetRefreshTokenRequest) (*descAuth.GetRefreshTokenResponse, error) {

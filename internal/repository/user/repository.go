@@ -1,24 +1,31 @@
 package user
 
 import (
-	"github.com/kirillmc/auth/internal/repository"
 	"github.com/kirillmc/platform_common/pkg/db"
+	"github.com/kirillmc/trainings-auth/internal/repository"
 )
 
 // ТУТ ИМПЛЕМЕНТАЦИЯ МЕТОДОВ
 
 const (
-	tableName = "users"
+	usersTableName       = "users"
+	accessRolesTableName = "roles_to_endpoints"
+	adminsTableName      = "admins"
+	modersTableName      = "moders"
 
-	idColumn        = "id"
-	nameColumn      = "username"
-	emailColumn     = "email"
-	passwordColumn  = "password"
-	roleColumn      = "role"
-	createdAtColumn = "created_at"
-	updatedAtColumn = "updated_at"
+	idColumn     = "id"
+	userIdColumn = "user_id"
 
-	returnId = "RETURNING id"
+	nameColumn         = "name"
+	surnameColumn      = "surname"
+	loginColumn        = "login"
+	emailColumn        = "email"
+	avatarlColumn      = "avatar"
+	passwordHashColumn = "password_hash"
+	roleColumn         = "role"
+	endpointColumn     = "endpoint"
+	lockedColumn       = "locked"
+	returnId           = "RETURNING id"
 )
 
 type repo struct {

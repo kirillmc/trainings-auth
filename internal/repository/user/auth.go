@@ -4,14 +4,14 @@ import (
 	"context"
 
 	sq "github.com/Masterminds/squirrel"
-	"github.com/kirillmc/auth/internal/model"
 	"github.com/kirillmc/platform_common/pkg/db"
+	"github.com/kirillmc/trainings-auth/internal/model"
 )
 
 // ТУТ ИМПЛЕМЕНТАЦИЯ МЕТОДОВ
 
-func (r *repo) GetRole(ctx context.Context, userName string) (model.Role, error) {
-	builder := sq.Select(roleColumn).PlaceholderFormat(sq.Dollar).From(tableName).Where(sq.Eq{nameColumn: userName}).Limit(1)
+func (r *repo) GetRole(ctx context.Context, login string) (model.Role, error) {
+	builder := sq.Select(roleColumn).PlaceholderFormat(sq.Dollar).From(usersTableName).Where(sq.Eq{loginColumn: login}).Limit(1)
 
 	query, args, err := builder.ToSql()
 	if err != nil {
@@ -34,8 +34,8 @@ func (r *repo) GetRole(ctx context.Context, userName string) (model.Role, error)
 	return role, nil
 }
 
-func (r *repo) GetHashPass(ctx context.Context, userName string) (string, error) {
-	builder := sq.Select(passwordColumn).PlaceholderFormat(sq.Dollar).From(tableName).Where(sq.Eq{nameColumn: userName}).Limit(1)
+func (r *repo) GetHashPass(ctx context.Context, login string) (string, error) {
+	builder := sq.Select(passwordHashColumn).PlaceholderFormat(sq.Dollar).From(usersTableName).Where(sq.Eq{loginColumn: login}).Limit(1)
 
 	query, args, err := builder.ToSql()
 	if err != nil {

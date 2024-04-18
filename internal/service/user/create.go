@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 
-	"github.com/kirillmc/auth/internal/model"
+	"github.com/kirillmc/trainings-auth/internal/model"
 	"github.com/pkg/errors"
 )
 

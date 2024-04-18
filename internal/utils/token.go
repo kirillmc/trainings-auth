@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/kirillmc/auth/internal/model"
+	"github.com/kirillmc/trainings-auth/internal/model"
 	"github.com/pkg/errors"
 )
 
@@ -13,8 +13,8 @@ func GenerateToken(user model.UserForToken, secretKey []byte, duration time.Dura
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(duration).Unix(),
 		},
-		Username: user.Username,
-		Role:     user.Role,
+		Login: user.Login,
+		Role:  user.Role,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

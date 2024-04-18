@@ -5,19 +5,14 @@ import (
 	"log"
 
 	sq "github.com/Masterminds/squirrel"
-	"github.com/kirillmc/auth/internal/model"
 	"github.com/kirillmc/platform_common/pkg/db"
-)
-
-const (
-	accessRolesBd  = "roles_to_endpoints"
-	endpointColumn = "endpoint"
+	"github.com/kirillmc/trainings-auth/internal/model"
 )
 
 func (r *repo) GetAccessibleRoles(ctx context.Context) (map[string]model.Role, error) {
 	builder := sq.Select(endpointColumn, roleColumn).
 		PlaceholderFormat(sq.Dollar).
-		From(accessRolesBd)
+		From(accessRolesTableName)
 
 	query, args, err := builder.ToSql()
 	if err != nil {

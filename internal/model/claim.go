@@ -4,6 +4,6 @@ import "github.com/dgrijalva/jwt-go"
 
 type UserClaims struct {
 	jwt.StandardClaims
-	Username string `json:"username"`
-	Role     Role   `json:"role"`
+	Login string `json:"login"`
+	Role  Role   `json:"role"`
 }

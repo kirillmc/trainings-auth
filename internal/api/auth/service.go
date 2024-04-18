@@ -1,8 +1,8 @@
 package auth
 
 import (
-	"github.com/kirillmc/auth/internal/service"
-	desc "github.com/kirillmc/auth/pkg/auth_v1"
+	"github.com/kirillmc/trainings-auth/internal/service"
+	desc "github.com/kirillmc/trainings-auth/pkg/auth_v1"
 )
 
 type Implementation struct {

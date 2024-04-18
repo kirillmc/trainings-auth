@@ -7,8 +7,8 @@ import (
 
 	"google.golang.org/grpc/metadata"
 
-	"github.com/kirillmc/auth/internal/config/env"
-	"github.com/kirillmc/auth/internal/utils"
+	"github.com/kirillmc/trainings-auth/internal/config/env"
+	"github.com/kirillmc/trainings-auth/internal/utils"
 	"github.com/pkg/errors"
 )
 

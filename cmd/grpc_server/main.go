@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/kirillmc/auth/internal/app"
+	"github.com/kirillmc/trainings-auth/internal/app"
 )
 
 func main() {

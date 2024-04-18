@@ -4,20 +4,20 @@ import (
 	"context"
 	"errors"
 
-	"github.com/kirillmc/auth/internal/config/env"
-	"github.com/kirillmc/auth/internal/model"
-	"github.com/kirillmc/auth/internal/utils"
 	"github.com/kirillmc/platform_common/pkg/verify_password"
+	"github.com/kirillmc/trainings-auth/internal/config/env"
+	"github.com/kirillmc/trainings-auth/internal/model"
+	"github.com/kirillmc/trainings-auth/internal/utils"
 )
 
 func (s *serv) Login(ctx context.Context, req *model.UserToLogin) (string, error) {
 	// Сверяем хэши пароля
-	hashPass, err := s.userRepository.GetHashPass(ctx, req.Username)
+	hashPass, err := s.userRepository.GetHashPass(ctx, req.Login)
 	if err != nil {
 		return "", err
 	}
 
-	role, err := s.userRepository.GetRole(ctx, req.Username)
+	role, err := s.userRepository.GetRole(ctx, req.Login)
 	if err != nil {
 		return "", err
 	}
@@ -33,8 +33,8 @@ func (s *serv) Login(ctx context.Context, req *model.UserToLogin) (string, error
 
 	refreshToken, err := utils.GenerateToken(
 		model.UserForToken{
-			Username: req.Username,
-			Role:     role,
+			Login: req.Login,
+			Role:  role,
 		},
 		[]byte(refreshConfig.RefreshTokenSecretKey()),
 		refreshConfig.RefreshTokenExpiration(),

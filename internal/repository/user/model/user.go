@@ -1,17 +1,14 @@
 package model
 
-import (
-	"database/sql"
-	"time"
-
-	"github.com/kirillmc/auth/internal/model"
-)
+import "github.com/kirillmc/trainings-auth/internal/model"
 
 type User struct {
-	Id        int64        `db:"id"`
-	Username  string       `db:"username"`
-	Email     string       `ab:"email"`
-	Role      model.Role   `db:"role"`
-	CreatedAt time.Time    `db:"created_at"`
-	UpdatedAt sql.NullTime `db:"updated_at"`
+	Id       int64      `db:"id"`
+	Name     string     `db:"name"`
+	Surname  string     `db:"surname"`
+	Email    string     `db:"email"`
+	Avatar   string     `db:"avatar"`
+	Login    string     `db:"login"`
+	IsLocked bool       `db:"locked"`
+	Role     model.Role `db:"role"`
 }

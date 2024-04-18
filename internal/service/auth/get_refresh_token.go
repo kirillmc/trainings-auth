@@ -6,9 +6,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/kirillmc/auth/internal/config/env"
-	"github.com/kirillmc/auth/internal/model"
-	"github.com/kirillmc/auth/internal/utils"
+	"github.com/kirillmc/trainings-auth/internal/config/env"
+	"github.com/kirillmc/trainings-auth/internal/model"
+	"github.com/kirillmc/trainings-auth/internal/utils"
 )
 
 func (s *serv) GetRefreshToken(ctx context.Context, oldRefreshToken string) (string, error) {
@@ -24,7 +24,7 @@ func (s *serv) GetRefreshToken(ctx context.Context, oldRefreshToken string) (str
 
 	refreshToken, err := utils.GenerateToken(
 		model.UserForToken{
-			Username: claims.Username,
+			Login: claims.Login,
 			//TODO:  Нужно ли лезть в базу или роль можно также всзять из calims?
 			Role: claims.Role,
 		},

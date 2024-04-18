@@ -3,8 +3,8 @@ package auth
 import (
 	"context"
 
-	"github.com/kirillmc/auth/internal/converter"
-	descAuth "github.com/kirillmc/auth/pkg/auth_v1"
+	"github.com/kirillmc/trainings-auth/internal/converter"
+	descAuth "github.com/kirillmc/trainings-auth/pkg/auth_v1"
 )
 
 func (i *Implementation) Login(ctx context.Context, req *descAuth.LoginRequest) (*descAuth.LoginResponse, error) {

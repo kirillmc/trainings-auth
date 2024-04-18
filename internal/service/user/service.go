@@ -1,8 +1,8 @@
 package user
 
 import (
-	"github.com/kirillmc/auth/internal/repository"
-	def "github.com/kirillmc/auth/internal/service"
+	"github.com/kirillmc/trainings-auth/internal/repository"
+	def "github.com/kirillmc/trainings-auth/internal/service"
 )
 
 var _ def.UserService = (*serv)(nil) //валидация имплементации интерфейса
