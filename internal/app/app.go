@@ -26,8 +26,7 @@ import (
 )
 
 const (
-	SERVICE_PEM = "tls/service.pem"
-	SERVICE_KEY = "tls/service.key"
+	serversNum = 3
 )
 
 var configPath string
@@ -64,7 +63,7 @@ func (a *App) Run() error {
 	}()
 
 	wg := sync.WaitGroup{}
-	wg.Add(3)
+	wg.Add(serversNum)
 
 	go func() {
 		defer wg.Done()
@@ -135,10 +134,12 @@ func (a *App) initServiceProvider(_ context.Context) error {
 }
 
 func (a *App) initGRPCServer(ctx context.Context) error {
+	c := a.serviceProvider.InterceptorClient()
+
 	a.grpcServer = grpc.NewServer(
 		grpc.Creds(insecure.NewCredentials()),
 		//grpc.Creds(insecure.NewCredentials()),
-		grpc.UnaryInterceptor(interceptor.ValidateInerceptor),
+		grpc.ChainUnaryInterceptor(c.PolicyInterceptor, interceptor.ValidateInerceptor),
 	)
 
 	reflection.Register(a.grpcServer) // рефлексия вкл для постмана

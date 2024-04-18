@@ -15,5 +15,5 @@ func (i *Implementation) LockUser(ctx context.Context, req *desc.LockUserRequest
 		return nil, err
 	}
 
-	return nil, nil
+	return &emptypb.Empty{}, nil
 }

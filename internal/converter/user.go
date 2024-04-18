@@ -37,11 +37,11 @@ func ToUserModelCreateFromDesc(user *desc.CreateRequest) *model.UserToCreate {
 func ToUserModelUpdateFromDesc(user *desc.UpdateRequest) *model.UserToUpdate {
 	return &model.UserToUpdate{
 		Id:      user.Id,
-		Login:   user.Info.Login,
-		Email:   user.Info.Email,
-		Name:    user.Info.Name,
-		Surname: user.Info.Surname,
-		Avatar:  user.Info.Avatar,
+		Login:   model.Create(user.Info.Login.Value),
+		Email:   model.Create(user.Info.Email.Value),
+		Name:    model.Create(user.Info.Name.Value),
+		Surname: model.Create(user.Info.Surname.Value),
+		Avatar:  model.Create(user.Info.Avatar.Value),
 	}
 }
 
@@ -66,8 +66,8 @@ func ToUserToUnlockFromDesc(unlock *desc.UnlockUserRequest) *model.UserToUnlock 
 func ToPasswordToUpdateFromDesc(password *desc.UpdatePasswordRequest) *model.PasswordToUpdate {
 	return &model.PasswordToUpdate{
 		UserId:          password.UserId,
-		Password:        password.Info.Password,
-		ConfirmPassword: password.Info.PasswordConfirm,
+		Password:        model.Create(password.Info.Password.Value),
+		ConfirmPassword: model.Create(password.Info.PasswordConfirm.Value),
 	}
 }
 func ToUserToLoginFromDescAuth(user *descAuth.LoginRequest) *model.UserToLogin {

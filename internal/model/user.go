@@ -1,7 +1,5 @@
 package model
 
-import "google.golang.org/protobuf/types/known/wrapperspb"
-
 type User struct {
 	Id       int64
 	Login    string
@@ -26,11 +24,11 @@ type UserToCreate struct {
 
 type UserToUpdate struct {
 	Id      int64
-	Login   *wrapperspb.StringValue
-	Email   *wrapperspb.StringValue
-	Name    *wrapperspb.StringValue
-	Surname *wrapperspb.StringValue
-	Avatar  *wrapperspb.StringValue
+	Login   NilString
+	Email   NilString
+	Name    NilString
+	Surname NilString
+	Avatar  NilString
 	Role    Role
 }
 
@@ -49,8 +47,8 @@ type RoleToUpdate struct {
 
 type PasswordToUpdate struct {
 	UserId          int64
-	Password        *wrapperspb.StringValue
-	ConfirmPassword *wrapperspb.StringValue
+	Password        NilString
+	ConfirmPassword NilString
 }
 
 type UserToLogin struct {
@@ -71,3 +69,21 @@ const (
 	RoleModer   Role = 2
 	RoleAdmin   Role = 3
 )
+
+type NilString struct {
+	Value   string
+	IsEmpty bool
+}
+
+func Create(val string) NilString {
+	if len(val) > 0 {
+		return NilString{
+			Value:   val,
+			IsEmpty: false,
+		}
+	}
+	return NilString{
+		Value:   val,
+		IsEmpty: true,
+	}
+}

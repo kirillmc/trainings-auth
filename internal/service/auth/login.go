@@ -12,12 +12,12 @@ import (
 
 func (s *serv) Login(ctx context.Context, req *model.UserToLogin) (string, error) {
 	// Сверяем хэши пароля
-	hashPass, err := s.userRepository.GetHashPass(ctx, req.Login)
+	hashPass, err := s.authRepository.GetHashPass(ctx, req.Login)
 	if err != nil {
 		return "", err
 	}
 
-	role, err := s.userRepository.GetRole(ctx, req.Login)
+	role, err := s.authRepository.GetRole(ctx, req.Login)
 	if err != nil {
 		return "", err
 	}

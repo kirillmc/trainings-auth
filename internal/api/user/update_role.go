@@ -15,5 +15,5 @@ func (i *Implementation) UpdateRole(ctx context.Context, req *desc.UpdateRoleReq
 		return nil, err
 	}
 
-	return nil, nil
+	return &emptypb.Empty{}, nil
 }

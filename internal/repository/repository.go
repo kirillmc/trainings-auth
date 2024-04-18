@@ -20,9 +20,13 @@ type UserRepository interface {
 	LockUser(ctx context.Context, req *model.UserToLock) error
 	UnlockUser(ctx context.Context, req *model.UserToUnlock) error
 	Delete(ctx context.Context, id int64) error
+}
 
+type AuthRepository interface {
 	GetRole(ctx context.Context, login string) (model.Role, error)
 	GetHashPass(ctx context.Context, login string) (string, error)
+}
 
+type AccessRepository interface {
 	GetAccessibleRoles(ctx context.Context) (map[string]model.Role, error)
 }

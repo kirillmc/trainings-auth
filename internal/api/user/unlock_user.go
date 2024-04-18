@@ -15,5 +15,5 @@ func (i *Implementation) UnlockUser(ctx context.Context, req *desc.UnlockUserReq
 		return nil, err
 	}
 
-	return nil, nil
+	return &emptypb.Empty{}, nil
 }

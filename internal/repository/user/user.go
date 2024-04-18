@@ -78,22 +78,22 @@ func (r *repo) UpdateUser(ctx context.Context, req *model.UserToUpdate) error {
 		PlaceholderFormat(sq.Dollar).
 		Where(sq.Eq{idColumn: req.Id})
 
-	if req.Login != nil {
+	if !req.Login.IsEmpty {
 		builder = builder.Set(loginColumn, req.Login.Value)
 	}
 
-	if req.Email != nil {
+	if !req.Email.IsEmpty {
 		builder = builder.Set(emailColumn, req.Email.Value)
 	}
 
-	if req.Name != nil {
+	if !req.Name.IsEmpty {
 		builder = builder.Set(nameColumn, req.Name.Value)
 	}
-	if req.Surname != nil {
+	if !req.Surname.IsEmpty {
 		builder = builder.Set(surnameColumn, req.Surname.Value)
 	}
 
-	if req.Avatar != nil {
+	if !req.Avatar.IsEmpty {
 		builder = builder.Set(avatarlColumn, req.Avatar.Value)
 	}
 
@@ -141,7 +141,7 @@ func (r *repo) UpdatePassword(ctx context.Context, req *model.PasswordToUpdate) 
 		PlaceholderFormat(sq.Dollar).
 		Where(sq.Eq{idColumn: req.UserId})
 
-	if req.Password != nil {
+	if !req.Password.IsEmpty {
 		hashPass, err := genPassHash(req.Password.Value)
 		if err != nil {
 			return err

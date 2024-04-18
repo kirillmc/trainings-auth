@@ -4,20 +4,27 @@ import (
 	"context"
 	"log"
 
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+
 	"github.com/kirillmc/platform_common/pkg/closer"
 	"github.com/kirillmc/platform_common/pkg/db"
 	"github.com/kirillmc/platform_common/pkg/db/pg"
 	"github.com/kirillmc/trainings-auth/internal/api/access"
 	"github.com/kirillmc/trainings-auth/internal/api/auth"
 	"github.com/kirillmc/trainings-auth/internal/api/user"
+	"github.com/kirillmc/trainings-auth/internal/client/rpc"
+	accessClient "github.com/kirillmc/trainings-auth/internal/client/rpc/access"
 	"github.com/kirillmc/trainings-auth/internal/config"
 	"github.com/kirillmc/trainings-auth/internal/config/env"
+	"github.com/kirillmc/trainings-auth/internal/interceptor"
 	"github.com/kirillmc/trainings-auth/internal/repository"
 	userRepo "github.com/kirillmc/trainings-auth/internal/repository/user"
 	"github.com/kirillmc/trainings-auth/internal/service"
 	accessService "github.com/kirillmc/trainings-auth/internal/service/access"
 	authService "github.com/kirillmc/trainings-auth/internal/service/auth"
 	userService "github.com/kirillmc/trainings-auth/internal/service/user"
+	descAccess "github.com/kirillmc/trainings-auth/pkg/access_v1"
 )
 
 // содержит все зависимости, необходимые в рамках приложения
@@ -27,9 +34,13 @@ type serviceProvider struct {
 	httpConfig    config.HTTPConfig
 	swaggerConfig config.SwaggerConfig
 
-	dbClient db.Client
+	dbClient          db.Client
+	accessClient      rpc.AccessClient
+	interceptorClient *interceptor.Interceptor
 
-	userRepository repository.UserRepository
+	userRepository   repository.UserRepository
+	accessRepository repository.AccessRepository
+	authRepository   repository.AuthRepository
 
 	userService   service.UserService
 	accessService service.AccessService
@@ -99,6 +110,34 @@ func (s *serviceProvider) SwaggerConfig() config.SwaggerConfig {
 	return s.swaggerConfig
 }
 
+func (s *serviceProvider) AccessClient() rpc.AccessClient {
+	if s.accessClient == nil {
+		cfg := s.GRPCConfig()
+
+		conn, err := grpc.Dial(
+			cfg.Address(),
+			grpc.WithTransportCredentials(insecure.NewCredentials()),
+		)
+		if err != nil {
+			log.Fatalf("failed to connect to access: %v", err)
+		}
+
+		s.accessClient = accessClient.NewAccessClient(descAccess.NewAccessV1Client(conn))
+	}
+
+	return s.accessClient
+}
+
+func (s *serviceProvider) InterceptorClient() *interceptor.Interceptor {
+	if s.interceptorClient == nil {
+		s.interceptorClient = &interceptor.Interceptor{
+			Client: s.AccessClient(),
+		}
+	}
+
+	return s.interceptorClient
+}
+
 func (s *serviceProvider) DBClient(ctx context.Context) db.Client {
 	if s.dbClient == nil {
 		cl, err := pg.New(ctx, s.PGConfig().DSN())
@@ -120,10 +159,26 @@ func (s *serviceProvider) DBClient(ctx context.Context) db.Client {
 
 func (s *serviceProvider) UserRepository(ctx context.Context) repository.UserRepository {
 	if s.userRepository == nil {
-		s.userRepository = userRepo.NewRepository(s.DBClient(ctx))
+		s.userRepository = userRepo.NewUserRepository(s.DBClient(ctx))
 	}
 
 	return s.userRepository
+}
+
+func (s *serviceProvider) AccessRepository(ctx context.Context) repository.AccessRepository {
+	if s.accessRepository == nil {
+		s.accessRepository = userRepo.NewAccessRepository(s.DBClient(ctx))
+	}
+
+	return s.accessRepository
+}
+
+func (s *serviceProvider) AuthRepository(ctx context.Context) repository.AuthRepository {
+	if s.authRepository == nil {
+		s.authRepository = userRepo.NewAuthRepository(s.DBClient(ctx))
+	}
+
+	return s.authRepository
 }
 
 func (s *serviceProvider) UserService(ctx context.Context) service.UserService {
@@ -136,7 +191,7 @@ func (s *serviceProvider) UserService(ctx context.Context) service.UserService {
 
 func (s *serviceProvider) AccessService(ctx context.Context) service.AccessService {
 	if s.accessService == nil {
-		s.accessService = accessService.NewService(s.UserRepository(ctx))
+		s.accessService = accessService.NewService(s.AccessRepository(ctx))
 	}
 
 	return s.accessService
@@ -144,7 +199,7 @@ func (s *serviceProvider) AccessService(ctx context.Context) service.AccessServi
 
 func (s *serviceProvider) AuthService(ctx context.Context) service.AuthService {
 	if s.authService == nil {
-		s.authService = authService.NewService(s.UserRepository(ctx))
+		s.authService = authService.NewService(s.AuthRepository(ctx))
 	}
 
 	return s.authService
