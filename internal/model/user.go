@@ -63,6 +63,19 @@ type UserForToken struct {
 
 type Role int32
 
+func (r *Role) ToInt() int64 {
+	switch *r {
+	case RoleUser:
+		return 1
+	case RoleModer:
+		return 2
+	case RoleAdmin:
+		return 3
+	}
+
+	return 0
+}
+
 const (
 	RoleUnknown Role = 0
 	RoleUser    Role = 1

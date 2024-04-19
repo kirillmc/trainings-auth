@@ -45,6 +45,6 @@ func (r *repo) GetAccessibleRoles(ctx context.Context) (map[string]model.Role, e
 		}
 		accessibleRoles[endpoint] = model.Role(role)
 	}
-
+	log.Printf("ROLES: %v", accessibleRoles)
 	return accessibleRoles, nil
 }

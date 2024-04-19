@@ -62,8 +62,9 @@ func (s *serv) Check(ctx context.Context, endpointAddress string) error {
 	if !ok {
 		return nil
 	}
-
-	if role == claims.Role {
+	log.Printf("role: %v", role.ToInt())
+	log.Printf("claims_role: %v", claims.Role.ToInt())
+	if role.ToInt() <= claims.Role.ToInt() {
 		return nil
 	}
 	return errors.New("access denied")
