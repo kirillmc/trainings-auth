@@ -9,6 +9,8 @@ create table users
     login         varchar(50)  not null unique,
     password_hash varchar(255) not null,
     role          integer      not null,
+    weight double precision not null default 0.0,
+    height double precision not null default 0.0,
     locked        boolean      not null default false
 );
 
@@ -21,16 +23,14 @@ create table roles_to_endpoints
 
 
 insert into roles_to_endpoints (endpoint, role)
-values ('/training_v1.TrainingV1/CreateTrainingProgram', 3),
-       ('/user_v1.UserV1/Get', 3),
+values ('/training_v1.TrainingV1/CreateTrainingProgram', 1),
+       ('/user_v1.UserV1/Get', 1),
        ('/user_v1.UserV1/Delete', 3),
-       ('/user_v1.UserV1/UpdatePassword', 3),
+       ('/user_v1.UserV1/UpdatePassword', 1),
        ('/user_v1.UserV1/UpdateRole', 3),
        ('/user_v1.UserV1/UnlockUser', 3),
-       ('/user_v1.UserV1/UpdateRole', 2),
-       ('/user_v1.UserV1/UnlockUser', 2),
        ('/user_v1.UserV1/LockUser', 3),
-       ('/user_v1.UserV1/Update', 3);
+       ('/user_v1.UserV1/Update', 1);
 -- +goose Down
 drop table users;
 drop table roles_to_endpoints;

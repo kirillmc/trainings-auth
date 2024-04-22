@@ -1,6 +1,7 @@
 package converter
 
 import (
+	"github.com/kirillmc/platform_common/pkg/nillable"
 	"github.com/kirillmc/trainings-auth/internal/model"
 	descAuth "github.com/kirillmc/trainings-auth/pkg/auth_v1"
 	desc "github.com/kirillmc/trainings-auth/pkg/user_v1"
@@ -17,6 +18,8 @@ func ToGetResponseFromService(user *model.User) *desc.GetResponse {
 			Surname:  user.Surname,
 			Avatar:   user.Avatar,
 			IsLocked: user.IsLocked,
+			Weight:   user.Weight,
+			Height:   user.Height,
 		},
 	}
 }
@@ -37,11 +40,11 @@ func ToUserModelCreateFromDesc(user *desc.CreateRequest) *model.UserToCreate {
 func ToUserModelUpdateFromDesc(user *desc.UpdateRequest) *model.UserToUpdate {
 	return &model.UserToUpdate{
 		Id:      user.Id,
-		Login:   model.Create(user.Info.Login.Value),
-		Email:   model.Create(user.Info.Email.Value),
-		Name:    model.Create(user.Info.Name.Value),
-		Surname: model.Create(user.Info.Surname.Value),
-		Avatar:  model.Create(user.Info.Avatar.Value),
+		Login:   nillable.Create(user.Info.Login.Value),
+		Email:   nillable.Create(user.Info.Email.Value),
+		Name:    nillable.Create(user.Info.Name.Value),
+		Surname: nillable.Create(user.Info.Surname.Value),
+		Avatar:  nillable.Create(user.Info.Avatar.Value),
 	}
 }
 
@@ -66,8 +69,15 @@ func ToUserToUnlockFromDesc(unlock *desc.UnlockUserRequest) *model.UserToUnlock 
 func ToPasswordToUpdateFromDesc(password *desc.UpdatePasswordRequest) *model.PasswordToUpdate {
 	return &model.PasswordToUpdate{
 		UserId:          password.UserId,
-		Password:        model.Create(password.Info.Password.Value),
-		ConfirmPassword: model.Create(password.Info.PasswordConfirm.Value),
+		Password:        nillable.Create(password.Info.Password.Value),
+		ConfirmPassword: nillable.Create(password.Info.PasswordConfirm.Value),
+	}
+}
+func ToAnthropometryFromDesc(anthropometry *desc.SetAnthropometryRequest) *model.Anthropometry {
+	return &model.Anthropometry{
+		UserId: anthropometry.UserId,
+		Weight: nillable.CreateNillableDouble(anthropometry.Weight.Value),
+		Height: nillable.CreateNillableDouble(anthropometry.Height.Value),
 	}
 }
 func ToUserToLoginFromDescAuth(user *descAuth.LoginRequest) *model.UserToLogin {

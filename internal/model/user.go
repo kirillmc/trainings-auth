@@ -1,5 +1,7 @@
 package model
 
+import "github.com/kirillmc/platform_common/pkg/nillable"
+
 type User struct {
 	Id       int64
 	Login    string
@@ -9,6 +11,8 @@ type User struct {
 	Surname  string
 	Avatar   string
 	IsLocked bool
+	Weight   float64
+	Height   float64
 }
 
 type UserToCreate struct {
@@ -24,11 +28,11 @@ type UserToCreate struct {
 
 type UserToUpdate struct {
 	Id      int64
-	Login   NilString
-	Email   NilString
-	Name    NilString
-	Surname NilString
-	Avatar  NilString
+	Login   nillable.NilString
+	Email   nillable.NilString
+	Name    nillable.NilString
+	Surname nillable.NilString
+	Avatar  nillable.NilString
 	Role    Role
 }
 
@@ -47,8 +51,14 @@ type RoleToUpdate struct {
 
 type PasswordToUpdate struct {
 	UserId          int64
-	Password        NilString
-	ConfirmPassword NilString
+	Password        nillable.NilString
+	ConfirmPassword nillable.NilString
+}
+
+type Anthropometry struct {
+	UserId int64
+	Weight nillable.NilDouble
+	Height nillable.NilDouble
 }
 
 type UserToLogin struct {
@@ -82,21 +92,3 @@ const (
 	RoleModer   Role = 2
 	RoleAdmin   Role = 3
 )
-
-type NilString struct {
-	Value   string
-	IsEmpty bool
-}
-
-func Create(val string) NilString {
-	if len(val) > 0 {
-		return NilString{
-			Value:   val,
-			IsEmpty: false,
-		}
-	}
-	return NilString{
-		Value:   val,
-		IsEmpty: true,
-	}
-}

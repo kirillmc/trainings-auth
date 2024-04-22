@@ -19,7 +19,7 @@ func (r *repo) GetRole(ctx context.Context, login string) (model.Role, error) {
 	}
 
 	q := db.Query{
-		Name:     "user_repository.GetRole",
+		Name:     "auth_repository.GetRole",
 		QueryRaw: query,
 	}
 
@@ -43,7 +43,7 @@ func (r *repo) GetHashPass(ctx context.Context, login string) (string, error) {
 	}
 
 	q := db.Query{
-		Name:     "user_repository.GetHashPass",
+		Name:     "auth_repository.GetHashPass",
 		QueryRaw: query,
 	}
 
@@ -56,4 +56,27 @@ func (r *repo) GetHashPass(ctx context.Context, login string) (string, error) {
 	}
 
 	return hashPass, nil
+}
+
+func (r *repo) GetUserIdByLoginAndPass(ctx context.Context, login string, pass string) (int64, error) {
+	builder := sq.Select(idColumn).PlaceholderFormat(sq.Dollar).From(usersTableName).Where(sq.Eq{loginColumn: login, passwordHashColumn: pass}).Limit(1)
+
+	query, args, err := builder.ToSql()
+	if err != nil {
+		return 0, err
+	}
+
+	q := db.Query{
+		Name:     "auth_repository.GetUserIdByLoginAndPass",
+		QueryRaw: query,
+	}
+
+	var id int64
+
+	err = r.db.DB().ScanOneContext(ctx, &id, q, args...)
+	if err != nil {
+		return 0, err
+	}
+
+	return id, nil
 }

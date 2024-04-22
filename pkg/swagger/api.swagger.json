@@ -280,6 +280,39 @@
           "UserV1"
         ]
       }
+    },
+    "/users_anthto": {
+      "patch": {
+        "operationId": "UserV1_UpdateAnthropometry",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/user_v1SetAnthropometryRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserV1"
+        ]
+      }
     }
   },
   "definitions": {
@@ -358,6 +391,23 @@
         "ADMIN"
       ],
       "default": "UNKNOWN"
+    },
+    "user_v1SetAnthropometryRequest": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "weight": {
+          "type": "number",
+          "format": "double"
+        },
+        "height": {
+          "type": "number",
+          "format": "double"
+        }
+      }
     },
     "user_v1UnlockUserRequest": {
       "type": "object",
@@ -458,6 +508,14 @@
         },
         "isLocked": {
           "type": "boolean"
+        },
+        "weight": {
+          "type": "number",
+          "format": "double"
+        },
+        "height": {
+          "type": "number",
+          "format": "double"
         }
       }
     },

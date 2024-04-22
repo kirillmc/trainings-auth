@@ -10,25 +10,25 @@ import (
 	"github.com/kirillmc/trainings-auth/internal/utils"
 )
 
-func (s *serv) Login(ctx context.Context, req *model.UserToLogin) (string, error) {
+func (s *serv) Login(ctx context.Context, req *model.UserToLogin) (string, int64, error) {
 	// Сверяем хэши пароля
 	hashPass, err := s.authRepository.GetHashPass(ctx, req.Login)
 	if err != nil {
-		return "", err
+		return "", 0, err
 	}
 
 	role, err := s.authRepository.GetRole(ctx, req.Login)
 	if err != nil {
-		return "", err
+		return "", 0, err
 	}
 
 	if !verify_password.VerifyPassword(hashPass, req.Password) {
-		return "", errors.New("Wrong password!!!")
+		return "", 0, errors.New("Wrong password!!!")
 	}
 
 	refreshConfig, err := env.NewRefreshTokenConfig()
 	if err != nil {
-		return "", err
+		return "", 0, err
 	}
 
 	refreshToken, err := utils.GenerateToken(
@@ -40,8 +40,13 @@ func (s *serv) Login(ctx context.Context, req *model.UserToLogin) (string, error
 		refreshConfig.RefreshTokenExpiration(),
 	)
 	if err != nil {
-		return "", errors.New("failed to generate token")
+		return "", 0, errors.New("failed to generate token")
 	}
 
-	return refreshToken, nil
+	user_id, err := s.authRepository.GetUserIdByLoginAndPass(ctx, req.Login, hashPass)
+	if err != nil {
+		return "", 0, err
+	}
+
+	return refreshToken, user_id, nil
 }

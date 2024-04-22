@@ -19,11 +19,10 @@ type accessConfig struct {
 }
 
 func NewAccessConfig() (config.AccessConfig, error) {
-	//host := os.Getenv(accessHostEnvName)
-	//if len(host) == 0 {
-	//	return nil, errors.New("access host not found")
-	//}
-	host := ""
+	host := os.Getenv(accessHostEnvName)
+	if len(host) == 0 {
+		return nil, errors.New("access host not found")
+	}
 
 	port := os.Getenv(accessPortEnvName)
 	if len(port) == 0 {

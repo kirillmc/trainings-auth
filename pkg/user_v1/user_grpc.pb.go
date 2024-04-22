@@ -31,6 +31,7 @@ type UserV1Client interface {
 	LockUser(ctx context.Context, in *LockUserRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 	UnlockUser(ctx context.Context, in *UnlockUserRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	UpdateAnthropometry(ctx context.Context, in *SetAnthropometryRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 }
 
 type userV1Client struct {
@@ -113,6 +114,15 @@ func (c *userV1Client) Delete(ctx context.Context, in *DeleteRequest, opts ...gr
 	return out, nil
 }
 
+func (c *userV1Client) UpdateAnthropometry(ctx context.Context, in *SetAnthropometryRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
+	err := c.cc.Invoke(ctx, "/user_v1.UserV1/UpdateAnthropometry", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserV1Server is the server API for UserV1 service.
 // All implementations must embed UnimplementedUserV1Server
 // for forward compatibility
@@ -125,6 +135,7 @@ type UserV1Server interface {
 	LockUser(context.Context, *LockUserRequest) (*empty.Empty, error)
 	UnlockUser(context.Context, *UnlockUserRequest) (*empty.Empty, error)
 	Delete(context.Context, *DeleteRequest) (*empty.Empty, error)
+	UpdateAnthropometry(context.Context, *SetAnthropometryRequest) (*empty.Empty, error)
 	mustEmbedUnimplementedUserV1Server()
 }
 
@@ -155,6 +166,9 @@ func (UnimplementedUserV1Server) UnlockUser(context.Context, *UnlockUserRequest)
 }
 func (UnimplementedUserV1Server) Delete(context.Context, *DeleteRequest) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+}
+func (UnimplementedUserV1Server) UpdateAnthropometry(context.Context, *SetAnthropometryRequest) (*empty.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateAnthropometry not implemented")
 }
 func (UnimplementedUserV1Server) mustEmbedUnimplementedUserV1Server() {}
 
@@ -313,6 +327,24 @@ func _UserV1_Delete_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserV1_UpdateAnthropometry_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetAnthropometryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserV1Server).UpdateAnthropometry(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user_v1.UserV1/UpdateAnthropometry",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserV1Server).UpdateAnthropometry(ctx, req.(*SetAnthropometryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserV1_ServiceDesc is the grpc.ServiceDesc for UserV1 service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -351,6 +383,10 @@ var UserV1_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Delete",
 			Handler:    _UserV1_Delete_Handler,
+		},
+		{
+			MethodName: "UpdateAnthropometry",
+			Handler:    _UserV1_UpdateAnthropometry_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

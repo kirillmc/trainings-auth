@@ -15,5 +15,7 @@ func ToUserFromRepo(user *modelRepo.User) *model.User {
 		Surname:  user.Surname,
 		Role:     user.Role,
 		IsLocked: user.IsLocked,
+		Weight:   user.Weight,
+		Height:   user.Height,
 	}
 }

@@ -15,6 +15,7 @@ type UserService interface {
 	UpdateRole(ctx context.Context, req *model.RoleToUpdate) error
 	LockUser(ctx context.Context, req *model.UserToLock) error
 	UnlockUser(ctx context.Context, req *model.UserToUnlock) error
+	UpdateAnthropometry(ctx context.Context, req *model.Anthropometry) error
 }
 
 type AccessService interface {
@@ -22,7 +23,7 @@ type AccessService interface {
 }
 
 type AuthService interface {
-	Login(ctx context.Context, req *model.UserToLogin) (string, error)
+	Login(ctx context.Context, req *model.UserToLogin) (string, int64, error)
 	GetRefreshToken(ctx context.Context, oldRefreshToken string) (string, error)
 	GetAccessToken(ctx context.Context, refreshToken string) (string, error)
 }

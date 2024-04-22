@@ -25,6 +25,8 @@ const (
 	roleColumn         = "role"
 	endpointColumn     = "endpoint"
 	lockedColumn       = "locked"
+	weightColumn       = "weight"
+	heightColumn       = "height"
 	returnId           = "RETURNING id"
 )
 

@@ -82,6 +82,13 @@ service UserV1{
       delete:"/user"
     };
   }
+
+  rpc UpdateAnthropometry(SetAnthropometryRequest) returns (google.protobuf.Empty){
+    option(google.api.http) = {
+      patch: "/users_anthto"
+      body:"*"
+    };
+  }
 }
 
 enum Role{
@@ -123,6 +130,8 @@ message User{
   string surname = 5;
   string avatar = 6;
   bool isLocked = 7;
+  double weight = 8;
+  double height = 9;
 }
 
 message CreateRequest{
@@ -167,4 +176,10 @@ message UnlockUserRequest{
 
 message DeleteRequest{
   int64 id = 1;
+}
+
+message SetAnthropometryRequest{
+  int64 user_id=1;
+  google.protobuf.DoubleValue weight =2;
+  google.protobuf.DoubleValue height = 3;
 }

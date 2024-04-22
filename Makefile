@@ -1,4 +1,4 @@
-include .env
+include prod.env
 
 LOCAL_BIN:=$(CURDIR)/bin
 
@@ -103,3 +103,20 @@ vendor-proto:
 			mv vendor.protogen/openapiv2/protoc-gen-openapiv2/options/*.proto vendor.protogen/protoc-gen-openapiv2/options &&\
 			rm -rf vendor.protogen/openapiv2 ;\
 		fi
+
+build:
+	GOOS=linux GOARCH=amd64 go build -o service_linux cmd/grpc_server/main.go
+
+copy-to-server:
+	scp service_linux root@31.129.59.59:
+
+docker-build-and-push:
+	docker buildx build --no-cache --platform linux/amd64 -t cr.selcloud.ru/trainings/trainings-auth-server:v0.0.3 .
+	#docker login cr.selcloud.ru/trainings
+	docker login -u token -p CRgAAAAAuxkdfrx-7EJxFSAdxCfZox1zPhh1ZOHx cr.selcloud.ru/trainings
+	docker push cr.selcloud.ru/trainings/trainings-auth-server:v0.0.3
+
+#docker-build-and-push:
+#	docker buildx build --no-cache --platform linux/amd64 -t <REGESTRY>/trainings-auth-server:v0.0.1 .
+#	docker login -u <USERNAME> -p <PASSWORD> <REGESTRY>
+#	docker push <REGESTRY>/trainings-auth-server:v0.0.1

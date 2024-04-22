@@ -171,6 +171,10 @@
       "properties": {
         "refreshToken": {
           "type": "string"
+        },
+        "userId": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },

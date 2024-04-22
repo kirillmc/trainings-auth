@@ -2,7 +2,6 @@ package app
 
 import (
 	"context"
-	"flag"
 	"io"
 	"log"
 	"net"
@@ -21,6 +20,7 @@ import (
 	descAuth "github.com/kirillmc/trainings-auth/pkg/auth_v1"
 	descUser "github.com/kirillmc/trainings-auth/pkg/user_v1"
 	_ "github.com/kirillmc/trainings-auth/statik"
+	"github.com/pkg/errors"
 	"github.com/rakyll/statik/fs"
 	"github.com/rs/cors"
 )
@@ -29,12 +29,6 @@ const (
 	serversNum = 3
 )
 
-var configPath string
-
-func init() {
-	flag.StringVar(&configPath, "config-path", ".env", "path to config file")
-}
-
 // подвязываем инициализаторские штуки из service_provider к старту приложения
 
 type App struct {
@@ -42,10 +36,11 @@ type App struct {
 	grpcServer      *grpc.Server
 	httpServer      *http.Server
 	swaggerServer   *http.Server
+	configPath      string
 }
 
-func NewApp(ctx context.Context) (*App, error) {
-	a := &App{}
+func NewApp(ctx context.Context, configPath string) (*App, error) {
+	a := &App{configPath: configPath}
 
 	err := a.initDeps(ctx)
 	if err != nil {
@@ -117,11 +112,9 @@ func (a *App) initDeps(ctx context.Context) error {
 }
 
 func (a *App) initConfig(_ context.Context) error {
-	flag.Parse()
-
-	err := config.Load(configPath)
+	err := config.Load(a.configPath)
 	if err != nil {
-		return err
+		return errors.Errorf("CONFIG: %s : %v", a.configPath, err)
 	}
 
 	return nil
@@ -193,9 +186,16 @@ func (a *App) initSwaggerServer(_ context.Context) error {
 	mux.Handle("/", http.StripPrefix("/", http.FileServer(statikFs)))
 	mux.HandleFunc("/api.swagger.json", serveSwaggerFile("/api.swagger.json"))
 
+	corsMiddleware := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Content-Type", "Content-Length", "Authorization"},
+		AllowCredentials: true,
+	})
+
 	a.swaggerServer = &http.Server{
 		Addr:    a.serviceProvider.SwaggerConfig().Address(),
-		Handler: mux,
+		Handler: corsMiddleware.Handler(mux),
 	}
 
 	return nil

@@ -8,5 +8,27 @@
       <jdbc-url>jdbc:postgresql://localhost:50325/auth</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="railway@viaduct.proxy.rlwy.net" uuid="0a0efb70-34d7-4e45-93f9-9024b5b6d71e">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://viaduct.proxy.rlwy.net:18010/railway</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+    <data-source source="LOCAL" name="PostgreSQL" uuid="84143255-634c-4e1e-a1f2-d1de297685a2">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <configured-by-url>true</configured-by-url>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>postgresql://postgres:PWZTGxnfknztLZEMRsrouDWHDbvsImjS@viaduct.proxy.rlwy.net:18010/railway</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+    <data-source source="LOCAL" name="verceldb@ep-steep-water-a2fls7tp-pooler.eu-central-1.aws.neon.tech" uuid="6f25dcf1-c52f-4bc2-b63f-634fe13eea3a">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://ep-steep-water-a2fls7tp-pooler.eu-central-1.aws.neon.tech:5432/verceldb</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>

@@ -11,4 +11,6 @@ type User struct {
 	Login    string     `db:"login"`
 	IsLocked bool       `db:"locked"`
 	Role     model.Role `db:"role"`
+	Weight   float64    `db:"weight"`
+	Height   float64    `db:"height"`
 }

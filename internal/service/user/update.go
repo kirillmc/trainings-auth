@@ -36,3 +36,12 @@ func (s *serv) UpdateRole(ctx context.Context, req *model.RoleToUpdate) error {
 
 	return nil
 }
+
+func (s *serv) UpdateAnthropometry(ctx context.Context, req *model.Anthropometry) error {
+	err := s.UpdateAnthropometry(ctx, req)
+	if err != nil {
+		return err
+	}
+	
+	return nil
+}

@@ -16,6 +16,7 @@ type UserRepository interface {
 	UpdateUser(ctx context.Context, req *model.UserToUpdate) error
 	UpdatePassword(ctx context.Context, req *model.PasswordToUpdate) error
 	UpdateRole(ctx context.Context, req *model.RoleToUpdate) error
+	UpdateAnthropometry(ctx context.Context, req *model.Anthropometry) error
 
 	LockUser(ctx context.Context, req *model.UserToLock) error
 	UnlockUser(ctx context.Context, req *model.UserToUnlock) error
@@ -25,6 +26,7 @@ type UserRepository interface {
 type AuthRepository interface {
 	GetRole(ctx context.Context, login string) (model.Role, error)
 	GetHashPass(ctx context.Context, login string) (string, error)
+	GetUserIdByLoginAndPass(ctx context.Context, login string, pass string) (int64, error)
 }
 
 type AccessRepository interface {

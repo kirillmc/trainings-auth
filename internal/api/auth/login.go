@@ -8,12 +8,13 @@ import (
 )
 
 func (i *Implementation) Login(ctx context.Context, req *descAuth.LoginRequest) (*descAuth.LoginResponse, error) {
-	refreshToken, err := i.authService.Login(ctx, converter.ToUserToLoginFromDescAuth(req))
+	refreshToken, id, err := i.authService.Login(ctx, converter.ToUserToLoginFromDescAuth(req))
 	if err != nil {
 		return nil, err
 	}
 
 	return &descAuth.LoginResponse{
 		RefreshToken: refreshToken,
+		UserId:       id,
 	}, nil
 }

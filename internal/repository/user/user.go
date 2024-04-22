@@ -47,7 +47,7 @@ func (r *repo) Create(ctx context.Context, req *model.UserToCreate) (int64, erro
 }
 
 func (r *repo) GetUser(ctx context.Context, id int64) (*model.User, error) {
-	builder := sq.Select(idColumn, nameColumn, surnameColumn, emailColumn, avatarlColumn, loginColumn, lockedColumn, roleColumn).
+	builder := sq.Select(idColumn, nameColumn, surnameColumn, emailColumn, avatarlColumn, loginColumn, lockedColumn, roleColumn, weightColumn, heightColumn).
 		PlaceholderFormat(sq.Dollar).
 		From(usersTableName).
 		Where(sq.Eq{idColumn: id}).
@@ -228,6 +228,37 @@ func (r *repo) UnlockUser(ctx context.Context, req *model.UserToUnlock) error {
 
 	q := db.Query{
 		Name:     "user_repository.UnlockUser",
+		QueryRaw: query,
+	}
+
+	_, err = r.db.DB().ExecContext(ctx, q, args...)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *repo) UpdateAnthropometry(ctx context.Context, req *model.Anthropometry) error {
+	builder := sq.Update(usersTableName).
+		PlaceholderFormat(sq.Dollar).
+		Where(sq.Eq{idColumn: req.UserId})
+
+	if !req.Height.IsEmpty {
+		builder = builder.Set(heightColumn, req.Height.Value)
+	}
+
+	if !req.Weight.IsEmpty {
+		builder = builder.Set(weightColumn, req.Weight.Value)
+	}
+
+	query, args, err := builder.ToSql()
+	if err != nil {
+		return err
+	}
+
+	q := db.Query{
+		Name:     "user_repository.UpdateAnthropometry",
 		QueryRaw: query,
 	}
 
