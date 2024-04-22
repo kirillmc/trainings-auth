@@ -8,8 +8,13 @@ option go_package = "github.com/kirillmc/trainings-auth/pkg/access_v1;access_v1"
 
 service AccessV1{
   rpc Check(CheckRequest) returns (google.protobuf.Empty);
+  rpc CheckIsExistUser(CheckIsExistUserRequest) returns(google.protobuf.Empty);
 }
 
 message CheckRequest{
   string endpoint_address = 1;
+}
+
+message CheckIsExistUserRequest{
+  int64 user_id = 1;
 }
